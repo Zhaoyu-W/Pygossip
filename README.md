@@ -5,9 +5,8 @@
 <details>
   <summary>Table of Contents</summary>
   <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-    </li>
+    <li><a href="#about-the-project">About The Project</a></li>
+    <li><a href="#folder-structure">Folder Structure</a></li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#contact">Contact</a></li>
   </ol>
@@ -15,17 +14,36 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-
 Pygossip is a `pull` model gossip protocol. This protocol will periodically select
-a random live member from its map, and try to set up a TCP/IP connection to the selected
+a random live member from its knowledge, and try to set up a TCP/IP connection to the selected
 node to attempt a gossip.
 
 Pygossip features:
-* Maintained latest 3 live members
+* Maintained the latest 3 live members
 * Maintained blacklist blocking failure nodes
 * Gossip to a random member every 3 seconds
 * Supported adversarial gossiping
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Folder Structure
+```sh
+├── README.md
+├── communication
+│   ├── __init__.py
+│   ├── connection.py
+│   ├── sender.py
+│   └── server.py
+├── controller
+│   ├── __init__.py
+│   ├── adversarial_controller.py
+│   └── server_controller.py
+├── gossip_main.py
+└── util
+    ├── __init__.py
+    ├── constants.py
+    └── gossip_msg.py
+```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -44,9 +62,7 @@ Pygossip features:
 
 <!-- CONTACT -->
 ## Contact
-
 Zhaoyu Wang - [@Zhaoyu_W](https://twitter.com/Zhaoyu_W) - zhaoyu.wang1999@gmail.com
-
 Project Link: [ https://github.com/Zhaoyu-W/Pygossip]( https://github.com/Zhaoyu-W/Pygossip)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
