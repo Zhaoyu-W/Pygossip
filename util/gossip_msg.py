@@ -59,7 +59,7 @@ def do_gossip(
             print("[GOSSIPER]: %s is adversarial gossiping due to %s..." % (client_identifier, e))
 
         gossip_time += 1
-        print("[GOSSIPER]: Finished gossiping to %s..." % identifier)
+    print("[GOSSIPER]: Finished gossiping to %s..." % client_identifier)
 
     for node in propagate_nodes:
         do_gossip(node, server_identifier, connection_pool)
