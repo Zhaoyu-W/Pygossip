@@ -11,6 +11,11 @@ class AdversarialController:
         self._adversarial_lock = Lock()
 
     def toggle_adversarial(self, command):
+        """Toggle adversarial
+
+        Args:
+            command (string): either Y or N
+        """
         self._adversarial_lock.acquire()
         if command == 'Y':
             self._adversarial.value = True
@@ -21,6 +26,12 @@ class AdversarialController:
         self._adversarial_lock.release()
 
     def response(self, client_socket, client_identfier):
+        """Reponse to client socket accordingly
+
+        Args:
+            client_socket (Socket): client socket
+            client_identfier (String): client identifier
+        """
         self._adversarial_lock.acquire()
         if self._adversarial.value:
             client_socket.send(ADVERSARIAL_DATA.encode())

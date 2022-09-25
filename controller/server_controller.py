@@ -22,9 +22,10 @@ class ServerController:
     def run(self):
         """Once run the controller, the main process will simultaneously read
         input commands and make decision based on the following 3 senarios:
-        1. ?: list all the live connections in csv format
-        2. +identifier: connect to new client
-        3. digit[0-9]: change the server state
+        1. !: list all the connections in csv format
+        2. ?: list all the connections in identifier --> state format
+        3. +identifier: connect to new client
+        4. digit[0-9]: change the server state
         """
         print("Start (%s) controller..." % (self.identifier))
         for command in sys.stdin:

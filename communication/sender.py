@@ -21,6 +21,10 @@ class GossipSender(multiprocessing.Process):
         self.connection_pool = connection_pool
 
     def run(self):
+        """Once run the sender, the subprocess will periodically select
+        a random live member from the connection map, and try to set up a
+        connection to the selected node to attempt a gossip
+        """
         last_time = time.time()*1000
         print("Started (%s) sender..." % self.identifier)
 
