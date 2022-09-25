@@ -34,17 +34,29 @@ class ServerController:
                 print("[CONTROLLER]: Invalid empty input...")
                 continue
 
-            if command == '?':
-                connections = self.connection_pool.get_all_entries()
-                for connection in connections:
-                    print(connection)
+            if command == '!':
+                entries = self.connection_pool.get_all_entries()
+                for entry in entries:
+                    print(entry)
+            elif command == '?':
+                entries = self.connection_pool.get_all_entries()
+                for entry in entries:
+                    identifier, _, state = entry.split(",")
+                    print("{} --> {}".format(identifier, state))
             elif command == 'Y' or command == 'N':
                 self.adversarial_controller.toggle_adversarial(command)
             elif command.isdigit():
                 self.update_server_state(int(command))
             elif command[0] == '+':
-                ip_address, tcp_port = command[1:].split(":")
-                self.establish_new_connection(ip_address, int(tcp_port))
+                try:
+                    client_address, _ = command[1:].split(":")
+                    socket.inet_aton(client_address)
+                except Exception:
+                    print("[CONTROLLER]: Input %s is invalid..." % command)
+                    continue
+
+                do_gossip(
+                    command[1:], self.identifier, self.connection_pool, support_blacklist=True)
             else:
                 print("[CONTROLLER]: Input %s is invalid..." % command)
 
@@ -57,26 +69,6 @@ class ServerController:
         if state > 0 and state <= 9:
             self.connection_pool.update_connection(self.identifier, state, int(time.time()))
             print("[CONTROLLER]: Updated %s state to %s" % (self.identifier, state))
+            print("{} --> {}".format(self.identifier, state))
         else:
             print("[CONTROLLER]: Invalid state input %s, state should be between 0 and 9..." % state)
-
-    def establish_new_connection(self, ip_address, tcp_port):
-        """Connect to new client and update the client information
-        in connection pool
-
-        Args:
-            ip_address (String): clietn ip address
-            tcp_port (int): client port
-        """
-        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client_socket.settimeout(5)
-        client_identifier = "{}:{}".format(ip_address, tcp_port)
-
-        try:
-            client_socket.connect((ip_address, int(tcp_port)))
-            do_gossip(
-                client_socket, client_identifier, self.identifier, self.connection_pool)
-            client_socket.close()
-        except Exception as e:
-            self.connection_pool.block_connection(client_identifier)
-            print("[CONTROLLER]: Connect to %s failed due to %s..." % (client_identifier, e))

@@ -33,17 +33,8 @@ class GossipSender(multiprocessing.Process):
                 if not live_members:
                     print("[SENDER]: Cannot find live members to gossip...")
                 else:
-                    try:
-                        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                        client_socket.settimeout(5)
-                        client_identifier = live_members[random.randint(0, len(live_members)-1)]
-                        client_ip_address, client_port = client_identifier.split(":")
-                        client_socket.connect((client_ip_address, int(client_port)))
-                        do_gossip(
-                            client_socket, client_identifier, self.identifier, self.connection_pool)
-                        client_socket.close()
-                    except Exception as e:
-                        print("[SENDER]: Gossip to %s failed due to %s..." % (client_identifier, e))
+                    client_identifier = live_members[random.randint(0, len(live_members)-1)]
+                    do_gossip(client_identifier, self.identifier, self.connection_pool)
 
                 # update to currrent time
                 last_time = cur_time

@@ -1,46 +1,75 @@
+import ipaddress
 import socket
 
+from util.constants import BUFF_SIZE
 from util.constants import GOSSIP_THRESHOLD
 
-def do_gossip(client_socket, client_identifier, server_identifier, connection_pool,):
-    data = client_socket.recv(1024)
-    if not data:
-        print("[GOSSIPER]: %s is adversarial gossiping..." % client_identifier)
-    else:
-        # remove leading and tailing whitespace
-        data = data.decode().strip()
-        if data:
-            entries = data.split("\n")
-            gossip_time = 0
-            for entry in entries:
-                if gossip_time == GOSSIP_THRESHOLD:
-                    print("[GOSSIPER]: Run out of %d times to gossip..." % GOSSIP_THRESHOLD)
-                    break
-                try:
-                    identifier, timestamp, state = entry.split(",")
-                    if identifier == server_identifier:
-                        continue
-                    else:
-                        gossip_address, _ = identifier.split(":")
-                        # check ip address
-                        socket.inet_aton(gossip_address)
-                        # check state
-                        state = int(state)
-                        if state < 0 or state > 10:
-                            print("[GOSSIPER]: Identifier %s has invalid state %d..." % (identifier, state))
-                            continue
-
-                        if identifier == client_identifier or \
-                            connection_pool.check_existence(identifier):
-                            connection_pool.update_connection(
-                                identifier, int(state), int(timestamp))
-                            print("[GOSSIPER]: Gossiped to %s successfully!" % identifier)
-                        else:
-                            print("[GOSSIPER]: Connection did not recogonize %s..." % identifier)
-
-                except Exception as e:
-                    print("[GOSSIPER]: %s is adversarial gossiping due to %s..." % (client_identifier, e))
-
-                gossip_time += 1
+def do_gossip(
+    client_identifier,
+    server_identifier,
+    connection_pool,
+    support_blacklist=False,
+):
+    try:
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client_socket.settimeout(10)
+        client_ip_address, client_port = client_identifier.split(":")
+        client_socket.connect((client_ip_address, int(client_port)))
+        data = yield_lines(client_socket).decode().strip().split("\n")
+        client_socket.close()
+    except Exception as e:
+        if support_blacklist:
+            connection_pool.block_connection(client_identifier)
+            print("[CONTROLLER]: Connect to %s failed due to %s..." % (client_identifier, e))
         else:
-            print("[Gossiper]: %s is adversarial gossiping..." % client_identifier)
+            print("[GOSSIPER]: Gossip to %s failed due to %s..." % (client_identifier, e))
+        return
+
+    propagate_nodes = []
+    gossip_time = 0
+
+    for entry in data:
+        if gossip_time == GOSSIP_THRESHOLD:
+            print("[GOSSIPER]: Run out of %d times to gossip..." % GOSSIP_THRESHOLD)
+            break
+        # remove leading and tailing whitespace
+        try:
+            identifier, timestamp, state = entry.split(",")
+            gossip_address, _ = identifier.split(":")
+            if identifier == server_identifier:
+            # or ipaddress.ip_address(gossip_address).is_private
+                continue
+            else:
+                # check ip address
+                socket.inet_aton(gossip_address)
+                # check state
+                state = int(state)
+                if state < 0 or state > 10:
+                    print("[GOSSIPER]: Identifier %s has invalid state %d..." % (identifier, state))
+                    continue
+
+                if identifier == client_identifier or \
+                    connection_pool.check_existence(identifier):
+                    connection_pool.update_connection(
+                        identifier, int(state), int(timestamp))
+                else:
+                    print("[GOSSIPER]: %s is a new node, propagate it then..." % identifier)
+                    propagate_nodes.append(identifier)
+        except Exception as e:
+            print("[GOSSIPER]: %s is adversarial gossiping due to %s..." % (client_identifier, e))
+
+        gossip_time += 1
+        print("[GOSSIPER]: Finished gossiping to %s..." % identifier)
+
+    for node in propagate_nodes:
+        do_gossip(node, server_identifier, connection_pool)
+
+def yield_lines(client_socket):
+    data = b''
+    while True:
+        line = client_socket.recv(BUFF_SIZE)
+        data += line
+        if len(line) < BUFF_SIZE:
+            # either 0 or end of data
+            break
+    return data
