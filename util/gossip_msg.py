@@ -10,6 +10,17 @@ def do_gossip(
     connection_pool,
     support_blacklist=False,
 ):
+    """Gossip to the client node and read its buffer table.
+    If server node knows the table nodes, update its
+    live member mapping. If not, continuously gossip to the
+    new node
+    Args:
+        client_identifier (String): client identifier
+        server_identifier (String): server identifier
+        connection_pool (ConnectionPool): server connection pool
+        support_blacklist (bool): update blacklist connection failed.
+                                  Defaults to False.
+    """
     try:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client_socket.settimeout(10)
@@ -65,6 +76,14 @@ def do_gossip(
         do_gossip(node, server_identifier, connection_pool)
 
 def yield_lines(client_socket):
+    """Yield buffer lines
+
+    Args:
+        client_socket (Socket): client socket
+
+    Returns:
+        byte: buffer lines
+    """
     data = b''
     while True:
         line = client_socket.recv(BUFF_SIZE)
