@@ -29,8 +29,10 @@ class AdversarialController:
             data = ""
             entries = self.connection_pool.get_all_entries()
             for idx in range(0, len(entries)):
-                data += entries[idx] if idx == len(entries)-1 else entries[idx]+"\n"
+                entry = entries[idx] if idx == len(entries)-1 \
+                        else entries[idx]+"\n"
+                data += entry
+                client_socket.send(entry.encode())
 
-            client_socket.send(data.encode())
-            print("[SERVER]: Responsed to %s successfully!" % client_identfier)
+            print("[SERVER]: Responsed %s to %s successfully!" % (data, client_identfier))
         self._adversarial_lock.release()
