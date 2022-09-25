@@ -69,6 +69,8 @@ Pygossip features:
         128.84.213.43:9876 --> 7
     +{ip_address}:{tcp_port}: connect to new node
     [0-9]: change the server state
+    Y: turn on adversarial gossip
+    N: turn off adversarial gossip
    ```
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
