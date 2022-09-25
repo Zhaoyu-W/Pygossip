@@ -53,11 +53,23 @@ Pygossip features:
    ```sh
    git clone https://github.com/Zhaoyu-W/Pygossip
    ```
-2. Run main script
+2. Run the main script
    ```sh
    python3 gossip_main.py {ip_address} {tcp_port} {initial_state}
    ```
-
+3. Command input
+   ```sh
+    !: list all the connections in csv format
+       e.g:
+        128.84.213.13:5678,1630281124,1
+        128.84.213.43:9876,1630282312,7
+    ?: list all the connections in identifier --> state format
+       e.g:
+        128.84.213.13:5678 --> 1
+        128.84.213.43:9876 --> 7
+    +{ip_address}:{tcp_port}: connect to new node
+    [0-9]: change the server state
+   ```
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- CONTACT -->
