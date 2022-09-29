@@ -18,10 +18,10 @@ Pygossip is a `pull` model gossip protocol. This protocol will periodically sele
 a random live member from its knowledge, and try to set up a TCP/IP connection to the selected
 node to attempt a gossip.
 
-Pygossip features:
-* Maintained the latest 3 live members
+Pygossip key features:
+* Maintained the live member table
 * Maintained blacklist blocking failure nodes
-* Gossip to a random member every 3 seconds
+* Gossip to a random member selected from table every 3 seconds
 * Supported adversarial gossiping
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

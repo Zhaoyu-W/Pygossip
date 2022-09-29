@@ -39,7 +39,7 @@ class ConnectionPool:
         if identifier in self._connections:
             # check old update
             if update_time < self._connections[identifier][TIMESTAMP]:
-                print("[CONNECTIONPOOL]:  Ignore older update on %s...(pool: %s)"
+                print("[CONNECTIONPOOL]: Ignore older update on %s...(pool: %s)"
                       % (identifier, self))
                 self._pool_lock.release()
                 return
@@ -65,7 +65,6 @@ class ConnectionPool:
             print("[CONNECTIONPOOL]: Added new connection %s (pool: %s)"
                   % (identifier, self))
             self._pool_lock.release()
-            self._maintain_connections()
 
     def _maintain_connections(self):
         """Maintain connections to meet the cache limit
