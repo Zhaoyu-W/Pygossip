@@ -1,5 +1,6 @@
 import multiprocessing
 import socket
+from threading import Thread
 import time
 
 
@@ -19,7 +20,6 @@ class GossipServer(multiprocessing.Process):
         self.connection_pool = connection_pool
         self.adversarial_controller = adversarial_controller
         self.state = initial_state
-        self._server_lock = multiprocessing.Lock()
 
     def run(self):
         """Once run the server, the subprocess will listen to the client
@@ -35,12 +35,12 @@ class GossipServer(multiprocessing.Process):
 
         while True:
             try:
-                self._server_lock.acquire()
                 client_socket, client_address = server_socket.accept()
                 client_ip, client_port = client_address
                 client_identfier = "{}:{}".format(client_ip, client_port)
-                self.adversarial_controller.response(client_socket, client_identfier)
-                self._server_lock.release()
+                response_thread = Thread(self.adversarial_controller.response(client_socket, client_identfier))
+                response_thread.start()
+                response_thread.join()
             except Exception as e:
                 print(
                     "[SERVER]: Failed to response to (%s) server due to %s..." % (client_socket, e))
