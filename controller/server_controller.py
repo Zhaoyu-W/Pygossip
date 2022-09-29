@@ -32,7 +32,6 @@ class ServerController:
             command = command.strip()
             # skip empty command 
             if not command:
-                print("[CONTROLLER]: Invalid empty input...")
                 continue
 
             if command == '!':
