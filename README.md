@@ -14,15 +14,15 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-Pygossip is a `pull` model gossip protocol. This protocol will periodically select
+Pygossip is a `pull` model gossip protocol. This protocol periodically selects
 a random live member from its knowledge, and try to set up a TCP/IP connection to the selected
 node to attempt a gossip.
 
 Pygossip key features:
-* Maintained the live member table
+* Maintained the connected member table
 * Maintained blacklist blocking failure nodes
-* Gossip to a random member selected from table every 3 seconds
-* Supported adversarial gossiping
+* Supported adversarial gossiping feature
+* Gossip to a random selected member every 3 seconds
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
